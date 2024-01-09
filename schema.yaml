@@ -4,7 +4,7 @@ info:
   description: API for executing Pike code.
   version: 1.0.0
 servers:
-  - url: http://165.232.158.218:3000
+  - url: code.abdellahi.tech
     description: Pike Code Execution Service
 paths:
   /:
