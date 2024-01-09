@@ -1,6 +1,6 @@
 # Privacy Policy for Pike Code Execution API
 
-Effective Date: [Insert Date]
+Effective Date: 09/01/2021
 
 This Privacy Policy describes how the Pike Code Execution API (referred to as "we", "us", or "our") collects, uses, and discloses information, and what choices you have with respect to the information.
 

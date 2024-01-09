@@ -4,6 +4,9 @@ const port = 3000;
 const fs = require('fs');
 const { exec } = require('child_process');
 const { v4: uuidv4 } = require('uuid');
+
+const TIMEOUT = 10000;
+
 app.use(express.json());
 
 app.post('/', (req, res) => {
@@ -14,18 +17,34 @@ app.post('/', (req, res) => {
             res.status(500).send('Error writing file');
             return;
         }
-        exec(`pike ${filename}`, (error, stdout, stderr) => {
-            if (error) {
-                res.status(500).send(`Execution error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                res.status(500).send(`Execution error: ${stderr}`);
-                return;
-            }
 
-            res.send(stdout);
+        const child = exec(`pike ${filename}`);
+        let isTimeout = false;
 
+        const timeout = setTimeout(() => {
+            isTimeout = true;
+            child.kill();
+            res.status(408).send('Request Timeout');
+        }, TIMEOUT);
+
+        child.stdout.on('data', (data) => {
+            if (!isTimeout) {
+                clearTimeout(timeout);
+                res.send(data);
+            }
+        });
+
+        child.stderr.on('data', (data) => {
+            if (!isTimeout) {
+                clearTimeout(timeout);
+                res.status(500).send(`Execution error: ${data}`);
+            }
+        });
+
+        child.on('exit', (code, signal) => {
+            if (signal === 'SIGTERM') {
+                console.log('Process terminated due to timeout');
+            }
             fs.unlink(filename, (err) => {
                 if (err) {
                     console.error(`Error deleting file ${filename}: ${err}`);
