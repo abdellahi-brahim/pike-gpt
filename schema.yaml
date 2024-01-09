@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  title: Pike Code Execution API
+  description: API for executing Pike code.
+  version: 1.0.0
+servers:
+  - url: http://165.232.158.218:3000
+    description: Pike Code Execution Service
+paths:
+  /:
+    post:
+      operationId: executePikeCode
+      summary: Executes Pike code.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: Pike code to be executed.
+      responses: 
+        '200':
+          description: Execution result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    description: Output of the executed code.
+        '400':
+          description: Invalid request
+        '500':
+          description: Server error
